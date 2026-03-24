@@ -19,6 +19,16 @@ In the second part, I added functionality allowing the user to edit the profile 
 
 ### Part 3:
 
+In the third part, I created the logic to render each card from the array of objects I created in the first part, and removed the cards that had been hard-coded directly into the index.html file.
+
+I added functionality to the button to add a new card by selecting the button and attaching a click event to it, which brings up the modal containing the form for creating a new card.
+
+I added the logic to generate and render a new card when the form to create a new card is submitted, by selecting and cloning the `li` element and its child elements within the `template` element, which replaced the previously hardcoded cards.
+
+I added functionality to the ‘Like’ and ‘Delete’ buttons on each card.
+
+I added the logic so that the user can open a larger version of each card by clicking on the image of each card.
+
 ## Technologies
 
 - JavaScript
