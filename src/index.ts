@@ -6,6 +6,7 @@ import { Section } from "./components/Section.js";
 import { UserInfo } from "./components/UserInfo.js";
 import type { CardData } from "./utils/constants.js";
 import { defaultFormConfig, initialCards } from "./utils/constants.js";
+import { Api } from "./components/Api.js";
 
 // CONSTANTS
 // Buttons
@@ -25,7 +26,11 @@ const editProfileDescriptionInput = editProfileForm.querySelector(
   ".popup__input_type_description",
 ) as HTMLInputElement;
 
-const editProfileImageInput = editProfileForm.querySelector(".popup__input_type_profile-image") as HTMLInputElement;
+const editProfileImageInput = editProfileForm.querySelector(".popup__input_type_avatar") as HTMLInputElement;
+
+// Start Api instance creation
+const apiRequest = new Api();
+// End Api instance creation
 
 // Start Form Validaton.
 const editProfileFormValidation = new FormValidator(defaultFormConfig, editProfileForm);
@@ -39,9 +44,25 @@ addCardFormValidation.enableValidation();
 const userInfo = new UserInfo(
   {
     nameSelector: ".profile__title",
-    jobSelector: ".profile__description"
+    jobSelector: ".profile__description",
+    avatarSelector: ".profile__image"
   }
 );
+
+(async function() {
+  try {
+    const response = await apiRequest.getUserInfo("/v1/users/me");
+    userInfo.setUserInfo(
+      {
+        name: response.name,
+        job: response.about,
+        avatar: response.avatar
+      }
+    )
+  } catch (error: unknown) {
+    console.error(error);
+  }
+})();
 
 const imagePopup = new PopupWithImage("#image-popup");
 imagePopup.setEventListeners();
@@ -91,15 +112,16 @@ addCardPopup.setEventListeners();
 const editProfilePopup = new PopupWithForm("#edit-popup", (inputValues) => {
   const userName = inputValues.name;
   const userJob = inputValues.description;
-  // const userProfileImage = inputValues["profile-image"];
+  const userProfileImage = inputValues["profile-image"];
 
-  if (!userName || !userJob) {
+  if (!userName || !userJob || !userProfileImage) {
     return;
   }
   
   userInfo.setUserInfo({
     name: userName,
-    job: userJob
+    job: userJob,
+    avatar: userProfileImage
   });
 
   editProfilePopup.close();
@@ -114,10 +136,11 @@ addCardBtn.addEventListener("click", () => {
 });
 
 editProfileBtn.addEventListener("click", () => {
-  const { name, job } = userInfo.getUserInfo();
+  const { name, job, avatar } = userInfo.getUserInfo();
 
   editProfileNameInput.value = name;
   editProfileDescriptionInput.value = job;
+  editProfileImageInput.value = avatar;
 
   editProfileFormValidation.resetValidation();
   editProfilePopup.open();

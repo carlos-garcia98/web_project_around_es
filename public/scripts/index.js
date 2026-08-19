@@ -5,6 +5,7 @@ import { Card } from "./components/Card.js";
 import { Section } from "./components/Section.js";
 import { UserInfo } from "./components/UserInfo.js";
 import { defaultFormConfig, initialCards } from "./utils/constants.js";
+import { Api } from "./components/Api.js";
 // CONSTANTS
 // Buttons
 const addCardBtn = document.querySelector(".profile__add-button");
@@ -15,7 +16,10 @@ const editProfileForm = document.querySelector("#edit-profile-form");
 // Inputs
 const editProfileNameInput = editProfileForm.querySelector(".popup__input_type_name");
 const editProfileDescriptionInput = editProfileForm.querySelector(".popup__input_type_description");
-const editProfileImageInput = editProfileForm.querySelector(".popup__input_type_profile-image");
+const editProfileImageInput = editProfileForm.querySelector(".popup__input_type_avatar");
+// Start Api instance creation
+const apiRequest = new Api();
+// End Api instance creation
 // Start Form Validaton.
 const editProfileFormValidation = new FormValidator(defaultFormConfig, editProfileForm);
 editProfileFormValidation.enableValidation();
@@ -25,8 +29,22 @@ addCardFormValidation.enableValidation();
 // Start Profile and Image Popup
 const userInfo = new UserInfo({
     nameSelector: ".profile__title",
-    jobSelector: ".profile__description"
+    jobSelector: ".profile__description",
+    avatarSelector: ".profile__image"
 });
+(async function () {
+    try {
+        const response = await apiRequest.getUserInfo("/v1/users/me");
+        userInfo.setUserInfo({
+            name: response.name,
+            job: response.about,
+            avatar: response.avatar
+        });
+    }
+    catch (error) {
+        console.error(error);
+    }
+})();
 const imagePopup = new PopupWithImage("#image-popup");
 imagePopup.setEventListeners();
 // End Profile and Image Popup
@@ -63,13 +81,14 @@ addCardPopup.setEventListeners();
 const editProfilePopup = new PopupWithForm("#edit-popup", (inputValues) => {
     const userName = inputValues.name;
     const userJob = inputValues.description;
-    // const userProfileImage = inputValues["profile-image"];
-    if (!userName || !userJob) {
+    const userProfileImage = inputValues["profile-image"];
+    if (!userName || !userJob || !userProfileImage) {
         return;
     }
     userInfo.setUserInfo({
         name: userName,
-        job: userJob
+        job: userJob,
+        avatar: userProfileImage
     });
     editProfilePopup.close();
 });
@@ -81,9 +100,10 @@ addCardBtn.addEventListener("click", () => {
     addCardPopup.open();
 });
 editProfileBtn.addEventListener("click", () => {
-    const { name, job } = userInfo.getUserInfo();
+    const { name, job, avatar } = userInfo.getUserInfo();
     editProfileNameInput.value = name;
     editProfileDescriptionInput.value = job;
+    editProfileImageInput.value = avatar;
     editProfileFormValidation.resetValidation();
     editProfilePopup.open();
 });
