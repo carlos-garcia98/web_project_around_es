@@ -26,8 +26,8 @@ export abstract class Popup {
     }
   }
 
-  protected setEventListeners(): void {
-    this._closeButton.addEventListener("click", this.close);
+  setEventListeners(): void {
+    this._closeButton.addEventListener("click", () => this.close());
 
     this._popupElement.addEventListener("click", (e: MouseEvent) => {
       if (e.target === this._popupElement) {

@@ -8,13 +8,14 @@ type SumbitFormFunction = (data: FormValues) => void;
 
 export class PopupWithForm extends Popup {
   private _handleSubmitForm: SumbitFormFunction;
-  private _inputList!: NodeListOf<HTMLInputElement>;
+  private _inputList: HTMLInputElement[];
   private _formElement: HTMLFormElement;
 
   constructor(popupSelector: string, handleSubmitForm: SumbitFormFunction) {
     super(popupSelector);
     this._handleSubmitForm = handleSubmitForm;
-    this._formElement = document.querySelector(".popup__form") as HTMLFormElement;
+    this._formElement = this._popupElement.querySelector(".popup__form") as HTMLFormElement;
+    this._inputList = Array.from(this._formElement.querySelectorAll(".popup__input")) as HTMLInputElement[];
   }
 
   private getInputValues(): FormValues {
@@ -26,7 +27,7 @@ export class PopupWithForm extends Popup {
     return formValues;
   }
 
-  protected setEventListeners(): void {
+  setEventListeners(): void {
     this._formElement.addEventListener("submit", (e: SubmitEvent) => {
       e.preventDefault()
       this._handleSubmitForm(this.getInputValues());

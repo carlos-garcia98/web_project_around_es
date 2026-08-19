@@ -16,7 +16,7 @@ export class Card {
         return cardElement;
     }
     handleLikeButton = (likeButton) => {
-        likeButton.classList.add("card__like-button_is-active");
+        likeButton.classList.toggle("card__like-button_is-active");
     };
     handleDeleteButton = (cardElement) => {
         cardElement.remove();

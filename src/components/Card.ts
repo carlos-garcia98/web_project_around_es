@@ -1,7 +1,4 @@
-interface CardData {
-  name: string;
-  link: string;
-}
+import type { CardData } from "../utils/constants.js";
 
 export class Card {
   private _templateSelector: string;
@@ -29,7 +26,7 @@ export class Card {
   }
 
   private handleLikeButton = (likeButton: HTMLButtonElement): void => {
-    likeButton.classList.add("card__like-button_is-active");
+    likeButton.classList.toggle("card__like-button_is-active");
   }
 
   private handleDeleteButton = (cardElement: HTMLElement): void => {

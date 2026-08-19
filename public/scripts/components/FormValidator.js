@@ -6,7 +6,7 @@ export class FormValidator {
     constructor(config, formElement) {
         this._config = config;
         this._formElement = formElement;
-        this._inputList = Array.from(document.querySelectorAll(config.inputSelector));
+        this._inputList = Array.from(this._formElement.querySelectorAll(config.inputSelector));
         this._buttonElement = formElement.querySelector(config.buttonSubmitSelector);
     }
     handleInvalidInput() {
@@ -22,6 +22,7 @@ export class FormValidator {
     hideInputError(inputElement) {
         const inputErrorElement = this._formElement.querySelector(`.${inputElement.id}-error`);
         inputElement.classList.remove(this._config.errorInputClass);
+        inputErrorElement.classList.remove(this._config.visibleError);
         inputErrorElement.textContent = "";
         inputErrorElement.title = "";
     }

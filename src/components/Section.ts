@@ -13,7 +13,7 @@ export class Section<T> {
     this._containerSelector = document.querySelector(containerSelector) as HTMLElement;
   }
 
-  renderer() {
+  renderItems() {
     this._items.forEach(item => {
       this._renderer(item);
     });
