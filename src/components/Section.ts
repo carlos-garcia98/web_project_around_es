@@ -13,6 +13,10 @@ export class Section<T> {
     this._containerSelector = document.querySelector(containerSelector) as HTMLElement;
   }
 
+  setItems(items: T[]) {
+    this._items = items;
+  }
+
   renderItems() {
     this._items.forEach(item => {
       this._renderer(item);

@@ -8,23 +8,67 @@ export class Api {
   }
 
   async getUserInfo(endpoint: string) {
-    try {
-      const response = await fetch(
-        this._URL + endpoint,
-        {
-          method: "GET",
-          headers: {
-            authorization: this._TOKEN
-          }
+    const response: Response = await fetch(
+      this._URL + endpoint,
+      {
+        method: "GET",
+        headers: {
+          authorization: this._TOKEN
         }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.json();
+  }
+
+  async updateUserInfo(name: string, job: string, avatar: string, endpoint: string) {
+    try {
+      const response: Response = await fetch(
+      this._URL + endpoint,
+      {
+        method: "PATCH",
+        headers: {
+          authorization: this._TOKEN,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: name,
+          about: job,
+          avatar: avatar
+        })
+      }
       );
+
       if (response.ok) {
         return await response.json();
       } else {
         throw new Error(`Error: ${response.status}`);
       }
+
     } catch (error: unknown) {
       console.log(error);
     }
+  }
+
+  async getCards(endpoint: string) {
+    const response: Response = await fetch(
+      this._URL + endpoint,
+      {
+        method: "GET",
+        headers: {
+          authorization: this._TOKEN
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.json();
   }
 }

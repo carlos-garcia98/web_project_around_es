@@ -79,7 +79,7 @@ function createCard(cardData: CardData): HTMLElement {
 
 const cardList = new Section<CardData>(
   {
-    items: initialCards,
+    items: [],
     renderer: (cardData) => {
       cardList.addItem(createCard(cardData));
     }
@@ -87,7 +87,15 @@ const cardList = new Section<CardData>(
   ".cards__list"
 );
 
-cardList.renderItems();
+(async function() {
+  try {
+    const cards = await apiRequest.getCards("/v1/cards");
+    cardList.setItems(cards);
+    cardList.renderItems()
+  } catch (error: unknown) {
+    console.log(error);
+  }
+})();
 
 const addCardPopup = new PopupWithForm("#new-card-popup", (inputValues) => {
   const name = inputValues["place-name"];
@@ -109,19 +117,26 @@ addCardPopup.setEventListeners();
 // End Cards
 
 // Start Profile Editing
-const editProfilePopup = new PopupWithForm("#edit-popup", (inputValues) => {
+const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) => {
   const userName = inputValues.name;
   const userJob = inputValues.description;
-  const userProfileImage = inputValues["profile-image"];
+  const userProfileImage = inputValues["avatar"];
 
   if (!userName || !userJob || !userProfileImage) {
     return;
   }
+
+  const response = await apiRequest.updateUserInfo(
+    userName,
+    userJob,
+    userProfileImage,
+    "/v1/users/me"
+  );
   
   userInfo.setUserInfo({
-    name: userName,
-    job: userJob,
-    avatar: userProfileImage
+    name: response.name,
+    job: response.about,
+    avatar: response.avatar
   });
 
   editProfilePopup.close();
@@ -144,5 +159,4 @@ editProfileBtn.addEventListener("click", () => {
 
   editProfileFormValidation.resetValidation();
   editProfilePopup.open();
-
 });
