@@ -71,4 +71,27 @@ export class Api {
 
     return await response.json();
   }
+
+  async addCard(name: string, link: string, endpoint: string) {
+    const response: Response = await fetch(
+      this._URL + endpoint,
+      {
+        method: "POST",
+        headers: {
+          authorization: this._TOKEN,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: name,
+          link: link
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.json();
+  }
 }

@@ -71,15 +71,16 @@ const cardList = new Section({
         console.log(error);
     }
 })();
-const addCardPopup = new PopupWithForm("#new-card-popup", (inputValues) => {
+const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) => {
     const name = inputValues["place-name"];
     const link = inputValues.link;
     if (!name || !link) {
         return;
     }
+    const response = await apiRequest.addCard(name, link, "/v1/cards");
     const newCard = {
-        name,
-        link
+        name: response.name,
+        link: response.link
     };
     cardList.addItem(createCard(newCard));
     addCardPopup.close();

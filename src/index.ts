@@ -97,7 +97,7 @@ const cardList = new Section<CardData>(
   }
 })();
 
-const addCardPopup = new PopupWithForm("#new-card-popup", (inputValues) => {
+const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) => {
   const name = inputValues["place-name"];
   const link = inputValues.link;
 
@@ -105,9 +105,15 @@ const addCardPopup = new PopupWithForm("#new-card-popup", (inputValues) => {
     return 
   }
 
-  const newCard = {
+  const response = await apiRequest.addCard(
     name,
-    link
+    link,
+    "/v1/cards"
+  );
+
+  const newCard = {
+    name: response.name,
+    link: response.link
   }
 
   cardList.addItem(createCard(newCard));
