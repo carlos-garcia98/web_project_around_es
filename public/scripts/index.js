@@ -5,7 +5,7 @@ import { PopupWithConfirmation } from "./components/PopupWithConfirmation.js";
 import { Card } from "./components/Card.js";
 import { Section } from "./components/Section.js";
 import { UserInfo } from "./components/UserInfo.js";
-import { defaultFormConfig, initialCards } from "./utils/constants.js";
+import { defaultFormConfig } from "./utils/constants.js";
 import { Api } from "./components/Api.js";
 // CONSTANTS
 // Buttons
@@ -54,6 +54,8 @@ imagePopup.setEventListeners();
 function createCard(cardData) {
     const card = new Card(cardData, "#card__template", (name, link) => {
         imagePopup.open(name, link);
+    }, async (id) => {
+        await apiRequest.deleteCard(id);
     });
     return card.generateCard();
 }
@@ -81,6 +83,7 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
     }
     const response = await apiRequest.addCard(name, link, "/v1/cards");
     const newCard = {
+        _id: response._id,
         name: response.name,
         link: response.link
     };

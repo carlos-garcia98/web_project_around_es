@@ -2,16 +2,20 @@ import { PopupWithConfirmation } from "./PopupWithConfirmation.js";
 export class Card {
     _templateSelector;
     _element;
+    _id;
     _name;
     _link;
     _handleCardClick;
+    _handleDeleteClick;
     _deleteConfirmationPopup;
     _deleteCofnrimationButton;
-    constructor(data, templateSelector, handleCardClick) {
+    constructor(data, templateSelector, handleCardClick, handleDeleteClick) {
         this._templateSelector = templateSelector;
+        this._id = data._id;
         this._name = data.name;
         this._link = data.link;
         this._handleCardClick = handleCardClick;
+        this._handleDeleteClick = handleDeleteClick;
         this._deleteConfirmationPopup = new PopupWithConfirmation("#delete-confirmation-popup");
         this._deleteCofnrimationButton = document.querySelector(".popup__button__delete-confirmation");
     }
@@ -26,9 +30,15 @@ export class Card {
     handleDeleteButton = (cardElement) => {
         this._deleteConfirmationPopup.open();
         this._deleteConfirmationPopup.setEventListeners();
-        this._deleteCofnrimationButton.addEventListener("click", () => {
-            cardElement.remove();
-            this._deleteConfirmationPopup.close();
+        this._deleteCofnrimationButton.addEventListener("click", async () => {
+            try {
+                await this._handleDeleteClick(this._id);
+                cardElement.remove();
+                this._deleteConfirmationPopup.close();
+            }
+            catch (error) {
+                console.log(error);
+            }
         });
     };
     setEventListeners(cardElement) {

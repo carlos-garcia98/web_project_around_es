@@ -71,4 +71,15 @@ export class Api {
         }
         return await response.json();
     }
+    async deleteCard(cardId) {
+        const response = await fetch(`${this._URL}/v1/cards/${cardId}`, {
+            method: "DELETE",
+            headers: {
+                authorization: this._TOKEN,
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+    }
 }

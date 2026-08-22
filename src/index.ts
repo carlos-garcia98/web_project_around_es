@@ -6,7 +6,7 @@ import { Card } from "./components/Card.js";
 import { Section } from "./components/Section.js";
 import { UserInfo } from "./components/UserInfo.js";
 import type { CardData } from "./utils/constants.js";
-import { defaultFormConfig, initialCards } from "./utils/constants.js";
+import { defaultFormConfig } from "./utils/constants.js";
 import { Api } from "./components/Api.js";
 
 // CONSTANTS
@@ -72,9 +72,16 @@ imagePopup.setEventListeners();
 
 // Start Cards
 function createCard(cardData: CardData): HTMLElement {
-  const card = new Card(cardData, "#card__template", (name, link) => {
-    imagePopup.open(name, link);
-  });
+  const card = new Card(
+    cardData,
+    "#card__template",
+    (name, link) => {
+      imagePopup.open(name, link);
+    },
+    async (id) => {
+      await apiRequest.deleteCard(id); 
+    }
+  );
 
   return card.generateCard();
 }
@@ -114,6 +121,7 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
   );
 
   const newCard = {
+    _id: response._id,
     name: response.name,
     link: response.link
   }
