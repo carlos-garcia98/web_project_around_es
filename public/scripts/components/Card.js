@@ -1,14 +1,19 @@
+import { PopupWithConfirmation } from "./PopupWithConfirmation.js";
 export class Card {
     _templateSelector;
     _element;
     _name;
     _link;
     _handleCardClick;
+    _deleteConfirmationPopup;
+    _deleteCofnrimationButton;
     constructor(data, templateSelector, handleCardClick) {
         this._templateSelector = templateSelector;
         this._name = data.name;
         this._link = data.link;
         this._handleCardClick = handleCardClick;
+        this._deleteConfirmationPopup = new PopupWithConfirmation("#delete-confirmation-popup");
+        this._deleteCofnrimationButton = document.querySelector(".popup__button__delete-confirmation");
     }
     getTemplate() {
         const cardTemplate = document.querySelector(this._templateSelector);
@@ -19,7 +24,12 @@ export class Card {
         likeButton.classList.toggle("card__like-button_is-active");
     };
     handleDeleteButton = (cardElement) => {
-        cardElement.remove();
+        this._deleteConfirmationPopup.open();
+        this._deleteConfirmationPopup.setEventListeners();
+        this._deleteCofnrimationButton.addEventListener("click", () => {
+            cardElement.remove();
+            this._deleteConfirmationPopup.close();
+        });
     };
     setEventListeners(cardElement) {
         const likeButton = cardElement.querySelector(".card__like-button");

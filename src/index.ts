@@ -1,6 +1,7 @@
 import { FormValidator } from "./components/FormValidator.js";
 import { PopupWithForm } from "./components/PopupWithForm.js";
 import { PopupWithImage } from "./components/PopupWithImage.js";
+import { PopupWithConfirmation } from "./components/PopupWithConfirmation.js";
 import { Card } from "./components/Card.js";
 import { Section } from "./components/Section.js";
 import { UserInfo } from "./components/UserInfo.js";
@@ -12,6 +13,7 @@ import { Api } from "./components/Api.js";
 // Buttons
 const addCardBtn = document.querySelector(".profile__add-button") as HTMLButtonElement;
 const editProfileBtn = document.querySelector(".profile__edit-button") as HTMLButtonElement;
+const deleteButton = document.querySelector(".popup__button__delete-confirmation") as HTMLButtonElement;
 
 // Forms
 const addCardFormElement = document.querySelector("#new-card-form") as HTMLFormElement;

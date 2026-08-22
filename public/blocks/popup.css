@@ -67,6 +67,14 @@
   padding: 34px 36px;
 }
 
+.popup__content__delete-confirmation {
+  min-height: 181px;
+}
+
+.popup__button__delete-confirmation {
+  margin-top: 38px;
+}
+
 .popup__form {
   margin-top: 27px;
 }
