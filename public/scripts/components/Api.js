@@ -5,8 +5,8 @@ export class Api {
         this._URL = "https://around-api.es.tripleten-services.com";
         this._TOKEN = "65f7b6bc-80d5-4e30-8b61-55dcc05ca3fc";
     }
-    async getUserInfo(endpoint) {
-        const response = await fetch(this._URL + endpoint, {
+    async getUserInfo() {
+        const response = await fetch(`${this._URL}/v1/users/me`, {
             method: "GET",
             headers: {
                 authorization: this._TOKEN
@@ -17,9 +17,9 @@ export class Api {
         }
         return await response.json();
     }
-    async updateUserInfo(name, job, avatar, endpoint) {
+    async updateUserInfo(name, job, avatar) {
         try {
-            const response = await fetch(this._URL + endpoint, {
+            const response = await fetch(`${this._URL}/v1/users/me`, {
                 method: "PATCH",
                 headers: {
                     authorization: this._TOKEN,
@@ -42,8 +42,8 @@ export class Api {
             console.log(error);
         }
     }
-    async getCards(endpoint) {
-        const response = await fetch(this._URL + endpoint, {
+    async getCards() {
+        const response = await fetch(`${this._URL}/v1/cards`, {
             method: "GET",
             headers: {
                 authorization: this._TOKEN
@@ -54,8 +54,8 @@ export class Api {
         }
         return await response.json();
     }
-    async addCard(name, link, endpoint) {
-        const response = await fetch(this._URL + endpoint, {
+    async addCard(name, link) {
+        const response = await fetch(`${this._URL}/v1/cards`, {
             method: "POST",
             headers: {
                 authorization: this._TOKEN,

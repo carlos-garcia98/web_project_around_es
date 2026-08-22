@@ -7,9 +7,9 @@ export class Api {
     this._TOKEN = "65f7b6bc-80d5-4e30-8b61-55dcc05ca3fc";
   }
 
-  async getUserInfo(endpoint: string) {
+  async getUserInfo() {
     const response: Response = await fetch(
-      this._URL + endpoint,
+      `${this._URL}/v1/users/me`,
       {
         method: "GET",
         headers: {
@@ -25,10 +25,10 @@ export class Api {
     return await response.json();
   }
 
-  async updateUserInfo(name: string, job: string, avatar: string, endpoint: string) {
+  async updateUserInfo(name: string, job: string, avatar: string) {
     try {
       const response: Response = await fetch(
-      this._URL + endpoint,
+      `${this._URL}/v1/users/me`,
       {
         method: "PATCH",
         headers: {
@@ -54,9 +54,9 @@ export class Api {
     }
   }
 
-  async getCards(endpoint: string) {
+  async getCards() {
     const response: Response = await fetch(
-      this._URL + endpoint,
+      `${this._URL}/v1/cards`,
       {
         method: "GET",
         headers: {
@@ -72,9 +72,9 @@ export class Api {
     return await response.json();
   }
 
-  async addCard(name: string, link: string, endpoint: string) {
+  async addCard(name: string, link: string) {
     const response: Response = await fetch(
-      this._URL + endpoint,
+      `${this._URL}/v1/cards`,
       {
         method: "POST",
         headers: {

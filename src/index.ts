@@ -52,7 +52,7 @@ const userInfo = new UserInfo(
 
 (async function() {
   try {
-    const response = await apiRequest.getUserInfo("/v1/users/me");
+    const response = await apiRequest.getUserInfo();
     userInfo.setUserInfo(
       {
         name: response.name,
@@ -97,7 +97,7 @@ const cardList = new Section<CardData>(
 
 (async function() {
   try {
-    const cards = await apiRequest.getCards("/v1/cards");
+    const cards = await apiRequest.getCards();
     cardList.setItems(cards);
     cardList.renderItems()
   } catch (error: unknown) {
@@ -115,8 +115,7 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
 
   const response = await apiRequest.addCard(
     name,
-    link,
-    "/v1/cards"
+    link
   );
 
   const newCard = {
@@ -144,8 +143,7 @@ const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) =>
   const response = await apiRequest.updateUserInfo(
     userName,
     userJob,
-    userProfileImage,
-    "/v1/users/me"
+    userProfileImage
   );
   
   userInfo.setUserInfo({

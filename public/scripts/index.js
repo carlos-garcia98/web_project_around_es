@@ -35,7 +35,7 @@ const userInfo = new UserInfo({
 });
 (async function () {
     try {
-        const response = await apiRequest.getUserInfo("/v1/users/me");
+        const response = await apiRequest.getUserInfo();
         userInfo.setUserInfo({
             name: response.name,
             job: response.about,
@@ -66,7 +66,7 @@ const cardList = new Section({
 }, ".cards__list");
 (async function () {
     try {
-        const cards = await apiRequest.getCards("/v1/cards");
+        const cards = await apiRequest.getCards();
         cardList.setItems(cards);
         cardList.renderItems();
     }
@@ -80,7 +80,7 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
     if (!name || !link) {
         return;
     }
-    const response = await apiRequest.addCard(name, link, "/v1/cards");
+    const response = await apiRequest.addCard(name, link);
     const newCard = {
         _id: response._id,
         name: response.name,
@@ -99,7 +99,7 @@ const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) =>
     if (!userName || !userJob || !userProfileImage) {
         return;
     }
-    const response = await apiRequest.updateUserInfo(userName, userJob, userProfileImage, "/v1/users/me");
+    const response = await apiRequest.updateUserInfo(userName, userJob, userProfileImage);
     userInfo.setUserInfo({
         name: response.name,
         job: response.about,
