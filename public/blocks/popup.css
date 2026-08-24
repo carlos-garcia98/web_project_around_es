@@ -9,6 +9,7 @@
   bottom: 0;
   right: 0;
   display: none;
+  box-sizing: border-box;
 }
 
 .popup__button {
@@ -71,7 +72,12 @@
   min-height: 181px;
 }
 
-.popup__button__delete-confirmation {
+.popup__content__edit-avatar {
+  min-height: 272px;
+}
+
+.popup__button__delete-confirmation,
+.popup__button__edit-avatar {
   margin-top: 38px;
 }
 

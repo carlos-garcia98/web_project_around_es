@@ -17,7 +17,7 @@ export class Api {
         }
         return await response.json();
     }
-    async updateUserInfo(name, job, avatar) {
+    async updateUserInfo(name, job) {
         try {
             const response = await fetch(`${this._URL}/v1/users/me`, {
                 method: "PATCH",
@@ -27,8 +27,7 @@ export class Api {
                 },
                 body: JSON.stringify({
                     name: name,
-                    about: job,
-                    avatar: avatar
+                    about: job
                 })
             });
             if (response.ok) {
@@ -41,6 +40,22 @@ export class Api {
         catch (error) {
             console.log(error);
         }
+    }
+    async updateAvatar(avatar) {
+        const response = await fetch(`${this._URL}/v1/users/me/avatar`, {
+            method: "PATCH",
+            headers: {
+                authorization: this._TOKEN,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                avatar: avatar
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+        return await response.json();
     }
     async getCards() {
         const response = await fetch(`${this._URL}/v1/cards`, {

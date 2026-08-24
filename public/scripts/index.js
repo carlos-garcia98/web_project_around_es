@@ -10,22 +10,25 @@ import { Api } from "./components/Api.js";
 // Buttons
 const addCardBtn = document.querySelector(".profile__add-button");
 const editProfileBtn = document.querySelector(".profile__edit-button");
-const deleteButton = document.querySelector(".popup__button__delete-confirmation");
+const editAvatarBtn = document.querySelector(".image_container");
 // Forms
-const addCardFormElement = document.querySelector("#new-card-form");
+const addCardForm = document.querySelector("#new-card-form");
 const editProfileForm = document.querySelector("#edit-profile-form");
+const editAvatarForm = document.querySelector("#edit-avatar-form");
 // Inputs
 const editProfileNameInput = editProfileForm.querySelector(".popup__input_type_name");
 const editProfileDescriptionInput = editProfileForm.querySelector(".popup__input_type_description");
-const editProfileImageInput = editProfileForm.querySelector(".popup__input_type_avatar");
+const editAvatarInput = editAvatarForm.querySelector(".popup__input_type_avatar");
 // Start Api instance creation
 const apiRequest = new Api();
 // End Api instance creation
 // Start Form Validaton.
 const editProfileFormValidation = new FormValidator(defaultFormConfig, editProfileForm);
 editProfileFormValidation.enableValidation();
-const addCardFormValidation = new FormValidator(defaultFormConfig, addCardFormElement);
+const addCardFormValidation = new FormValidator(defaultFormConfig, addCardForm);
 addCardFormValidation.enableValidation();
+const editAvatarFormValidation = new FormValidator(defaultFormConfig, editAvatarForm);
+editAvatarFormValidation.enableValidation();
 // End Form Validation
 // Start Profile and Image Popup
 const userInfo = new UserInfo({
@@ -97,16 +100,14 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
 });
 addCardPopup.setEventListeners();
 // End Cards
-apiRequest.getCards().then(console.log);
 // Start Profile Editing
 const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) => {
     const userName = inputValues.name;
     const userJob = inputValues.description;
-    const userProfileImage = inputValues["avatar"];
-    if (!userName || !userJob || !userProfileImage) {
+    if (!userName || !userJob) {
         return;
     }
-    const response = await apiRequest.updateUserInfo(userName, userJob, userProfileImage);
+    const response = await apiRequest.updateUserInfo(userName, userJob);
     userInfo.setUserInfo({
         name: response.name,
         job: response.about,
@@ -115,6 +116,20 @@ const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) =>
     editProfilePopup.close();
 });
 editProfilePopup.setEventListeners();
+const editAvatarPopup = new PopupWithForm("#edit-avatar", async (inputValues) => {
+    const userAvatar = inputValues.avatar;
+    if (!userAvatar) {
+        return;
+    }
+    const response = await apiRequest.updateAvatar(userAvatar);
+    userInfo.setUserInfo({
+        name: response.name,
+        job: response.about,
+        avatar: response.avatar
+    });
+    editAvatarPopup.close();
+});
+editAvatarPopup.setEventListeners();
 // End Profile Editing
 // Start Popup Opening
 addCardBtn.addEventListener("click", () => {
@@ -122,10 +137,13 @@ addCardBtn.addEventListener("click", () => {
     addCardPopup.open();
 });
 editProfileBtn.addEventListener("click", () => {
-    const { name, job, avatar } = userInfo.getUserInfo();
+    const { name, job } = userInfo.getUserInfo();
     editProfileNameInput.value = name;
     editProfileDescriptionInput.value = job;
-    editProfileImageInput.value = avatar;
     editProfileFormValidation.resetValidation();
     editProfilePopup.open();
+});
+editAvatarBtn.addEventListener("click", () => {
+    editAvatarFormValidation.resetValidation();
+    editAvatarPopup.open();
 });
