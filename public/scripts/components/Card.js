@@ -5,17 +5,21 @@ export class Card {
     _id;
     _name;
     _link;
+    _isLiked;
     _handleCardClick;
     _handleDeleteClick;
+    _handleLikeClick;
     _deleteConfirmationPopup;
     _deleteCofnrimationButton;
-    constructor(data, templateSelector, handleCardClick, handleDeleteClick) {
+    constructor(data, templateSelector, handleCardClick, handleDeleteClick, handleLikeClick) {
         this._templateSelector = templateSelector;
         this._id = data._id;
         this._name = data.name;
         this._link = data.link;
+        this._isLiked = data.isLiked;
         this._handleCardClick = handleCardClick;
         this._handleDeleteClick = handleDeleteClick;
+        this._handleLikeClick = handleLikeClick;
         this._deleteConfirmationPopup = new PopupWithConfirmation("#delete-confirmation-popup");
         this._deleteCofnrimationButton = document.querySelector(".popup__button__delete-confirmation");
     }
@@ -24,8 +28,13 @@ export class Card {
         const cardElement = cardTemplate.content.querySelector(".card").cloneNode(true);
         return cardElement;
     }
-    handleLikeButton = (likeButton) => {
-        likeButton.classList.toggle("card__like-button_is-active");
+    handleLikeButton = async (likeButton) => {
+        const updateLike = await this._handleLikeClick(this._id, this._isLiked);
+        if (!updateLike) {
+            return;
+        }
+        this._isLiked = updateLike.isLiked;
+        likeButton.classList.toggle("card__like-button_is-active", this._isLiked);
     };
     handleDeleteButton = (cardElement) => {
         this._deleteConfirmationPopup.open();
@@ -59,9 +68,13 @@ export class Card {
         this._element = this.getTemplate();
         const cardImage = this._element.querySelector(".card__image");
         const cardDescription = this._element.querySelector(".card__title");
+        const likeButton = this._element.querySelector(".card__like-button");
         cardImage.src = this._link;
         cardImage.alt = this._name;
         cardDescription.textContent = this._name;
+        if (this._isLiked) {
+            likeButton.classList.add("card__like-button_is-active");
+        }
         this.setEventListeners(this._element);
         return this._element;
     }

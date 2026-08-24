@@ -10,6 +10,7 @@ export interface CardData {
   _id: string;
   name: string;
   link: string;
+  isLiked: boolean;
 }
 
 // export const initialCards: CardData[] = [

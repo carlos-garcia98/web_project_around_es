@@ -1,29 +1,38 @@
 import { PopupWithConfirmation } from "./PopupWithConfirmation.js";
 import type { CardData } from "../utils/constants.js";
 
+type HandleCardClick = (name: string, link: string) => void;
+type HandleDeleteClick = (id: string) => Promise<void>;
+type HandleLikeClick = (id: string, isLiked: boolean) => Promise<CardData | undefined>;
+
 export class Card {
   private _templateSelector: string;
   private _element!: HTMLElement;
   private _id: string;
   private _name: string;
   private _link: string;
-  private _handleCardClick: (name: string, link: string) => void;
-  private _handleDeleteClick: (id: string) => Promise<void>;
+  private _isLiked: boolean;
+  private _handleCardClick: HandleCardClick;
+  private _handleDeleteClick: HandleDeleteClick;
+  private _handleLikeClick: HandleLikeClick;
   private _deleteConfirmationPopup: PopupWithConfirmation;
   private _deleteCofnrimationButton: HTMLButtonElement;
 
   constructor(
     data: CardData,
     templateSelector: string, 
-    handleCardClick: (name: string, link: string) => void,
-    handleDeleteClick: (id: string) => Promise<void>
+    handleCardClick: HandleCardClick,
+    handleDeleteClick: HandleDeleteClick,
+    handleLikeClick: HandleLikeClick
   ) {
     this._templateSelector = templateSelector;
     this._id = data._id;
     this._name = data.name;
     this._link = data.link;
+    this._isLiked = data.isLiked
     this._handleCardClick = handleCardClick;
     this._handleDeleteClick = handleDeleteClick;
+    this._handleLikeClick = handleLikeClick;
     this._deleteConfirmationPopup = new PopupWithConfirmation("#delete-confirmation-popup");
     this._deleteCofnrimationButton = document.querySelector(".popup__button__delete-confirmation") as HTMLButtonElement;
   }
@@ -35,8 +44,16 @@ export class Card {
     return cardElement;
   }
 
-  private handleLikeButton = (likeButton: HTMLButtonElement): void => {
-    likeButton.classList.toggle("card__like-button_is-active");
+  private handleLikeButton = async (likeButton: HTMLButtonElement): Promise<CardData | undefined> => {
+    const updateLike = await this._handleLikeClick(this._id, this._isLiked);
+
+    if (!updateLike) {
+      return;
+    }
+
+    this._isLiked = updateLike.isLiked;
+
+    likeButton.classList.toggle("card__like-button_is-active", this._isLiked);
   }
 
   private handleDeleteButton = (cardElement: HTMLElement): void => {
@@ -78,10 +95,16 @@ export class Card {
 
     const cardImage = this._element.querySelector(".card__image") as HTMLImageElement;
     const cardDescription = this._element.querySelector(".card__title") as HTMLTitleElement;
+    const likeButton = this._element.querySelector(".card__like-button") as HTMLButtonElement;
+
 
     cardImage.src = this._link;
     cardImage.alt = this._name;
     cardDescription.textContent = this._name;
+
+    if (this._isLiked) {
+      likeButton.classList.add("card__like-button_is-active");
+    }
 
     this.setEventListeners(this._element);
 

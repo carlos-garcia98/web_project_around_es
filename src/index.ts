@@ -79,6 +79,13 @@ function createCard(cardData: CardData): HTMLElement {
     },
     async (id) => {
       await apiRequest.deleteCard(id); 
+    },
+    async (id, isLiked) => {
+      if (isLiked) {
+        return await apiRequest.removeLike(id);
+      }
+
+      return await apiRequest.addLike(id);
     }
   );
 
@@ -121,7 +128,8 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
   const newCard = {
     _id: response._id,
     name: response.name,
-    link: response.link
+    link: response.link,
+    isLiked: response.isLiked
   }
 
   cardList.addItem(createCard(newCard));

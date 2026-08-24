@@ -55,6 +55,11 @@ function createCard(cardData) {
         imagePopup.open(name, link);
     }, async (id) => {
         await apiRequest.deleteCard(id);
+    }, async (id, isLiked) => {
+        if (isLiked) {
+            return await apiRequest.removeLike(id);
+        }
+        return await apiRequest.addLike(id);
     });
     return card.generateCard();
 }
@@ -84,13 +89,15 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
     const newCard = {
         _id: response._id,
         name: response.name,
-        link: response.link
+        link: response.link,
+        isLiked: response.isLiked
     };
     cardList.addItem(createCard(newCard));
     addCardPopup.close();
 });
 addCardPopup.setEventListeners();
 // End Cards
+apiRequest.getCards().then(console.log);
 // Start Profile Editing
 const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) => {
     const userName = inputValues.name;

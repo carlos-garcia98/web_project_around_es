@@ -54,6 +54,8 @@ export class Api {
     }
   }
 
+
+
   async getCards() {
     const response: Response = await fetch(
       `${this._URL}/v1/cards`,
@@ -109,5 +111,43 @@ export class Api {
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
+  }
+
+  async addLike(cardId: string) {
+    const response: Response = await fetch(
+      `${this._URL}/v1/cards/${cardId}/likes`,
+      {
+        method: "PUT",
+        headers: {
+          authorization: this._TOKEN,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.json();
+  }
+
+  async removeLike(cardId: string) {
+    const response: Response = await fetch(
+      `${this._URL}/v1/cards/${cardId}/likes`,
+      {
+        method: "DELETE",
+        headers: {
+          authorization: this._TOKEN,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.json();
   }
 }
