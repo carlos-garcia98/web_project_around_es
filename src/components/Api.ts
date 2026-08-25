@@ -1,3 +1,4 @@
+import type { CardData, CardFormData, UserFormData, AvatarFormData,UserData } from "../utils/constants.js";
 interface ApiConfig {
   baseUrl: string;
   headers: {
@@ -15,7 +16,7 @@ export class Api {
     this._TOKEN = configObj.headers.authorization;
   }
 
-  async getUserInfo() {
+  async getUserInfo(): Promise<UserData> {
     const response: Response = await fetch(
       `${this._URL}/v1/users/me`,
       {
@@ -33,7 +34,7 @@ export class Api {
     return await response.json();
   }
 
-  async updateUserInfo(name: string, job: string) {
+  async updateUserInfo({name, about}: UserFormData): Promise<UserData> {
       const response: Response = await fetch(
         `${this._URL}/v1/users/me`,
         {
@@ -44,7 +45,7 @@ export class Api {
           },
           body: JSON.stringify({
             name: name,
-            about: job
+            about: about
           })
         }
       );
@@ -56,7 +57,7 @@ export class Api {
       return await response.json();
   }
 
-  async updateAvatar(avatar: string) {
+  async updateAvatar({avatar}: AvatarFormData): Promise<UserData> {
     const response: Response = await fetch(
       `${this._URL}/v1/users/me/avatar`,
       {
@@ -78,7 +79,7 @@ export class Api {
     return await response.json();
   }
 
-  async getCards() {
+  async getCards(): Promise<CardData[]> {
     const response: Response = await fetch(
       `${this._URL}/v1/cards`,
       {
@@ -96,7 +97,7 @@ export class Api {
     return await response.json();
   }
 
-  async addCard(name: string, link: string) {
+  async addCard({name, link}: CardFormData): Promise<CardData> {
     const response: Response = await fetch(
       `${this._URL}/v1/cards`,
       {
@@ -119,7 +120,7 @@ export class Api {
     return await response.json();
   }
 
-  async deleteCard(cardId: string) {
+  async deleteCard(cardId: string): Promise<void> {
     const response: Response = await fetch(
       `${this._URL}/v1/cards/${cardId}`,
       {
@@ -135,7 +136,7 @@ export class Api {
     }
   }
 
-  async addLike(cardId: string) {
+  async addLike(cardId: string): Promise<CardData> {
     const response: Response = await fetch(
       `${this._URL}/v1/cards/${cardId}/likes`,
       {
@@ -154,7 +155,7 @@ export class Api {
     return await response.json();
   }
 
-  async removeLike(cardId: string) {
+  async removeLike(cardId: string): Promise<CardData> {
     const response: Response = await fetch(
       `${this._URL}/v1/cards/${cardId}/likes`,
       {

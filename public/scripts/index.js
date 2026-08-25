@@ -43,7 +43,7 @@ editAvatarFormValidation.enableValidation();
 // Start Profile and Image Popup
 const userInfo = new UserInfo({
     nameSelector: ".profile__title",
-    jobSelector: ".profile__description",
+    aboutSelector: ".profile__description",
     avatarSelector: ".profile__image"
 });
 const imagePopup = new PopupWithImage("#image-popup");
@@ -79,6 +79,7 @@ const cardList = new Section({
         cardList.addItem(createCard(cardData));
     }
 }, ".cards__list");
+// Get user information and cards from API
 (async function () {
     try {
         const [userData, initialCards] = await Promise.all([
@@ -87,7 +88,7 @@ const cardList = new Section({
         ]);
         userInfo.setUserInfo({
             name: userData.name,
-            job: userData.about,
+            about: userData.about,
             avatar: userData.avatar
         });
         cardList.setItems(initialCards);
@@ -105,7 +106,10 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
             return;
         }
         addCardSubmitBtn.textContent = "Creando...";
-        const response = await apiRequest.addCard(name, link);
+        const response = await apiRequest.addCard({
+            name: name,
+            link: link
+        });
         const newCard = {
             _id: response._id,
             name: response.name,
@@ -128,15 +132,18 @@ addCardPopup.setEventListeners();
 const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) => {
     try {
         const userName = inputValues.name;
-        const userJob = inputValues.description;
-        if (!userName || !userJob) {
+        const userAbout = inputValues.description;
+        if (!userName || !userAbout) {
             return;
         }
         editProfileSubmitBtn.textContent = "Guardando...";
-        const response = await apiRequest.updateUserInfo(userName, userJob);
+        const response = await apiRequest.updateUserInfo({
+            name: userName,
+            about: userAbout
+        });
         userInfo.setUserInfo({
             name: response.name,
-            job: response.about,
+            about: response.about,
             avatar: response.avatar
         });
         editProfilePopup.close();
@@ -156,10 +163,12 @@ const editAvatarPopup = new PopupWithForm("#edit-avatar", async (inputValues) =>
             return;
         }
         editAvatarSubmitBtn.textContent = "Guardando...";
-        const response = await apiRequest.updateAvatar(userAvatar);
+        const response = await apiRequest.updateAvatar({
+            avatar: userAvatar
+        });
         userInfo.setUserInfo({
             name: response.name,
-            job: response.about,
+            about: response.about,
             avatar: response.avatar
         });
         editAvatarPopup.close();
@@ -179,9 +188,9 @@ addCardBtn.addEventListener("click", () => {
     addCardPopup.open();
 });
 editProfileBtn.addEventListener("click", () => {
-    const { name, job } = userInfo.getUserInfo();
+    const { name, about } = userInfo.getUserInfo();
     editProfileNameInput.value = name;
-    editProfileDescriptionInput.value = job;
+    editProfileDescriptionInput.value = about;
     editProfileFormValidation.resetValidation();
     editProfilePopup.open();
 });

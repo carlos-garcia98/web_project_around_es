@@ -63,7 +63,7 @@ editAvatarFormValidation.enableValidation();
 const userInfo = new UserInfo(
   {
     nameSelector: ".profile__title",
-    jobSelector: ".profile__description",
+    aboutSelector: ".profile__description",
     avatarSelector: ".profile__image"
   }
 );
@@ -113,6 +113,7 @@ const cardList = new Section<CardData>(
   ".cards__list"
 );
 
+// Get user information and cards from API
 (async function() {
   try {
     const [userData, initialCards] = await Promise.all([
@@ -123,7 +124,7 @@ const cardList = new Section<CardData>(
     userInfo.setUserInfo(
       {
         name: userData.name,
-        job: userData.about,
+        about: userData.about,
         avatar: userData.avatar
       }
     );
@@ -147,10 +148,10 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
   
     addCardSubmitBtn.textContent = "Creando...";
   
-    const response = await apiRequest.addCard(
-      name,
-      link
-    );
+    const response = await apiRequest.addCard({
+      name: name,
+      link: link
+    });
   
     const newCard = {
       _id: response._id,
@@ -175,22 +176,22 @@ addCardPopup.setEventListeners();
 const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) => {
   try {
     const userName = inputValues.name;
-    const userJob = inputValues.description;
+    const userAbout = inputValues.description;
   
-    if (!userName || !userJob) {
+    if (!userName || !userAbout) {
       return;
     }
 
     editProfileSubmitBtn.textContent = "Guardando...";
   
-    const response = await apiRequest.updateUserInfo(
-      userName,
-      userJob
-    );
+    const response = await apiRequest.updateUserInfo({
+      name: userName,
+      about: userAbout
+    });
     
     userInfo.setUserInfo({
       name: response.name,
-      job: response.about,
+      about: response.about,
       avatar: response.avatar
     });
   
@@ -214,11 +215,13 @@ const editAvatarPopup = new PopupWithForm("#edit-avatar", async (inputValues) =>
 
     editAvatarSubmitBtn.textContent = "Guardando...";
   
-    const response = await apiRequest.updateAvatar(userAvatar);
+    const response = await apiRequest.updateAvatar({
+      avatar: userAvatar
+    });
   
     userInfo.setUserInfo({
       name: response.name,
-      job: response.about,
+      about: response.about,
       avatar: response.avatar
     });
     
@@ -240,10 +243,10 @@ addCardBtn.addEventListener("click", () => {
 });
 
 editProfileBtn.addEventListener("click", () => {
-  const { name, job } = userInfo.getUserInfo();
+  const { name, about } = userInfo.getUserInfo();
 
   editProfileNameInput.value = name;
-  editProfileDescriptionInput.value = job;
+  editProfileDescriptionInput.value = about;
 
   editProfileFormValidation.resetValidation();
   editProfilePopup.open();

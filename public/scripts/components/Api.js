@@ -17,7 +17,7 @@ export class Api {
         }
         return await response.json();
     }
-    async updateUserInfo(name, job) {
+    async updateUserInfo({ name, about }) {
         const response = await fetch(`${this._URL}/v1/users/me`, {
             method: "PATCH",
             headers: {
@@ -26,7 +26,7 @@ export class Api {
             },
             body: JSON.stringify({
                 name: name,
-                about: job
+                about: about
             })
         });
         if (!response.ok) {
@@ -34,7 +34,7 @@ export class Api {
         }
         return await response.json();
     }
-    async updateAvatar(avatar) {
+    async updateAvatar({ avatar }) {
         const response = await fetch(`${this._URL}/v1/users/me/avatar`, {
             method: "PATCH",
             headers: {
@@ -62,7 +62,7 @@ export class Api {
         }
         return await response.json();
     }
-    async addCard(name, link) {
+    async addCard({ name, link }) {
         const response = await fetch(`${this._URL}/v1/cards`, {
             method: "POST",
             headers: {
