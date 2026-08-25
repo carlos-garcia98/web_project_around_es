@@ -46,19 +46,6 @@ const userInfo = new UserInfo({
     jobSelector: ".profile__description",
     avatarSelector: ".profile__image"
 });
-(async function () {
-    try {
-        const response = await apiRequest.getUserInfo();
-        userInfo.setUserInfo({
-            name: response.name,
-            job: response.about,
-            avatar: response.avatar
-        });
-    }
-    catch (error) {
-        console.error(error);
-    }
-})();
 const imagePopup = new PopupWithImage("#image-popup");
 imagePopup.setEventListeners();
 // End Profile and Image Popup
@@ -67,12 +54,22 @@ function createCard(cardData) {
     const card = new Card(cardData, "#card__template", (name, link) => {
         imagePopup.open(name, link);
     }, async (id) => {
-        await apiRequest.deleteCard(id);
-    }, async (id, isLiked) => {
-        if (isLiked) {
-            return await apiRequest.removeLike(id);
+        try {
+            await apiRequest.deleteCard(id);
         }
-        return await apiRequest.addLike(id);
+        catch (error) {
+            console.error(error);
+        }
+    }, async (id, isLiked) => {
+        try {
+            if (isLiked) {
+                return await apiRequest.removeLike(id);
+            }
+            return await apiRequest.addLike(id);
+        }
+        catch (error) {
+            console.error(error);
+        }
     });
     return card.generateCard();
 }
@@ -84,12 +81,20 @@ const cardList = new Section({
 }, ".cards__list");
 (async function () {
     try {
-        const cards = await apiRequest.getCards();
-        cardList.setItems(cards);
+        const [userData, initialCards] = await Promise.all([
+            apiRequest.getUserInfo(),
+            apiRequest.getCards()
+        ]);
+        userInfo.setUserInfo({
+            name: userData.name,
+            job: userData.about,
+            avatar: userData.avatar
+        });
+        cardList.setItems(initialCards);
         cardList.renderItems();
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
     }
 })();
 const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) => {
@@ -111,7 +116,7 @@ const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) =>
         addCardPopup.close();
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
     }
     finally {
         addCardSubmitBtn.textContent = "Crear";
@@ -137,7 +142,7 @@ const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) =>
         editProfilePopup.close();
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
     }
     finally {
         editProfileSubmitBtn.textContent = "Guardar";
@@ -160,7 +165,7 @@ const editAvatarPopup = new PopupWithForm("#edit-avatar", async (inputValues) =>
         editAvatarPopup.close();
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
     }
     finally {
         editAvatarSubmitBtn.textContent = "Guardar";

@@ -68,21 +68,6 @@ const userInfo = new UserInfo(
   }
 );
 
-(async function() {
-  try {
-    const response = await apiRequest.getUserInfo();
-    userInfo.setUserInfo(
-      {
-        name: response.name,
-        job: response.about,
-        avatar: response.avatar
-      }
-    )
-  } catch (error: unknown) {
-    console.error(error);
-  }
-})();
-
 const imagePopup = new PopupWithImage("#image-popup");
 imagePopup.setEventListeners();
 // End Profile and Image Popup
@@ -130,10 +115,23 @@ const cardList = new Section<CardData>(
 
 (async function() {
   try {
-    const cards = await apiRequest.getCards();
-    cardList.setItems(cards);
-    cardList.renderItems()
-  } catch (error: unknown) {
+    const [userData, initialCards] = await Promise.all([
+      apiRequest.getUserInfo(),
+      apiRequest.getCards()
+    ]);
+
+    userInfo.setUserInfo(
+      {
+        name: userData.name,
+        job: userData.about,
+        avatar: userData.avatar
+      }
+    );
+
+    cardList.setItems(initialCards);
+    cardList.renderItems();
+
+  } catch (error) {
     console.error(error);
   }
 })();
