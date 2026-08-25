@@ -1,8 +1,7 @@
-import { PopupWithConfirmation } from "./PopupWithConfirmation.js";
 import type { CardData } from "../utils/constants.js";
 
 type HandleCardClick = (name: string, link: string) => void;
-type HandleDeleteClick = (id: string) => Promise<void>;
+type HandleDeleteClick = (id: string) => void;
 type HandleLikeClick = (id: string, isLiked: boolean) => Promise<CardData | undefined>;
 
 export class Card {
@@ -15,8 +14,6 @@ export class Card {
   private _handleCardClick: HandleCardClick;
   private _handleDeleteClick: HandleDeleteClick;
   private _handleLikeClick: HandleLikeClick;
-  private _deleteConfirmationPopup: PopupWithConfirmation;
-  private _deleteCofnrimationButton: HTMLButtonElement;
 
   constructor(
     data: CardData,
@@ -33,8 +30,6 @@ export class Card {
     this._handleCardClick = handleCardClick;
     this._handleDeleteClick = handleDeleteClick;
     this._handleLikeClick = handleLikeClick;
-    this._deleteConfirmationPopup = new PopupWithConfirmation("#delete-confirmation-popup");
-    this._deleteCofnrimationButton = document.querySelector(".popup__button__delete-confirmation") as HTMLButtonElement;
   }
 
   private getTemplate(): HTMLElement {
@@ -56,20 +51,8 @@ export class Card {
     likeButton.classList.toggle("card__like-button_is-active", this._isLiked);
   }
 
-  private handleDeleteButton = (cardElement: HTMLElement): void => {
-    this._deleteConfirmationPopup.open();
-    this._deleteConfirmationPopup.setEventListeners();
-    
-    this._deleteCofnrimationButton.addEventListener("click", async () => {
-      try {
-        await this._handleDeleteClick(this._id);
-
-        cardElement.remove();
-        this._deleteConfirmationPopup.close();
-      } catch (error) {
-        console.log(error);
-      }
-    });
+  private handleDeleteButton = (): void => {
+    this._handleDeleteClick(this._id);
   } 
 
   private setEventListeners(cardElement: HTMLElement): void {
@@ -82,7 +65,7 @@ export class Card {
     });
 
     deleteButton.addEventListener("click", () => {
-      this.handleDeleteButton(cardElement);
+      this.handleDeleteButton();
     });
 
     cardImage.addEventListener("click", () => {

@@ -1,10 +1,11 @@
 import { FormValidator } from "./components/FormValidator.js";
 import { PopupWithForm } from "./components/PopupWithForm.js";
 import { PopupWithImage } from "./components/PopupWithImage.js";
+import { PopupWithConfirmation } from "./components/PopupWithConfirmation.js";
 import { Card } from "./components/Card.js";
 import { Section } from "./components/Section.js";
 import { UserInfo } from "./components/UserInfo.js";
-import type { CardData } from "./utils/constants.js";
+import type { CardData } from "./utils/constants.js"; 
 import { defaultFormConfig } from "./utils/constants.js";
 import { Api } from "./components/Api.js";
 
@@ -73,6 +74,28 @@ imagePopup.setEventListeners();
 // End Profile and Image Popup
 
 // Start Cards
+const cardsMap = new Map<string, HTMLElement>();
+
+const deleteConfirmationPopup = new PopupWithConfirmation(
+  "#delete-confirmation-popup",
+  async (cardId) => {
+    try {
+      await apiRequest.deleteCard(cardId);
+
+      const cardElement = cardsMap.get(cardId);
+      if (cardElement) {
+        cardElement.remove();
+        cardsMap.delete(cardId);
+      }
+
+      deleteConfirmationPopup.close();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+);
+deleteConfirmationPopup.setEventListeners();
+
 function createCard(cardData: CardData): HTMLElement {
   const card = new Card(
     cardData,
@@ -80,12 +103,8 @@ function createCard(cardData: CardData): HTMLElement {
     (name, link) => {
       imagePopup.open(name, link);
     },
-    async (id) => {
-      try {
-        await apiRequest.deleteCard(id); 
-      } catch (error) {
-        console.error(error);
-      }
+    (id) => {
+      deleteConfirmationPopup.open(id);
     },
     async (id, isLiked) => {
       try {
@@ -100,7 +119,10 @@ function createCard(cardData: CardData): HTMLElement {
     }
   );
 
-  return card.generateCard();
+  const cardElement = card.generateCard();
+  cardsMap.set(cardData._id, cardElement);
+
+  return cardElement;
 }
 
 const cardList = new Section<CardData>(
