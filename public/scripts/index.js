@@ -15,12 +15,22 @@ const editAvatarBtn = document.querySelector(".image_container");
 const addCardForm = document.querySelector("#new-card-form");
 const editProfileForm = document.querySelector("#edit-profile-form");
 const editAvatarForm = document.querySelector("#edit-avatar-form");
+// Submit Buttons
+const addCardSubmitBtn = addCardForm.querySelector(".popup__button");
+const editProfileSubmitBtn = editProfileForm.querySelector(".popup__button");
+const editAvatarSubmitBtn = editAvatarForm.querySelector(".popup__button");
 // Inputs
 const editProfileNameInput = editProfileForm.querySelector(".popup__input_type_name");
 const editProfileDescriptionInput = editProfileForm.querySelector(".popup__input_type_description");
 const editAvatarInput = editAvatarForm.querySelector(".popup__input_type_avatar");
 // Start Api instance creation
-const apiRequest = new Api();
+const apiRequest = new Api({
+    baseUrl: "https://around-api.es.tripleten-services.com",
+    headers: {
+        authorization: "65f7b6bc-80d5-4e30-8b61-55dcc05ca3fc",
+        "Content-Type": "application/json"
+    }
+});
 // End Api instance creation
 // Start Form Validaton.
 const editProfileFormValidation = new FormValidator(defaultFormConfig, editProfileForm);
@@ -83,51 +93,78 @@ const cardList = new Section({
     }
 })();
 const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) => {
-    const name = inputValues["place-name"];
-    const link = inputValues.link;
-    if (!name || !link) {
-        return;
+    try {
+        const name = inputValues["place-name"];
+        const link = inputValues.link;
+        if (!name || !link) {
+            return;
+        }
+        addCardSubmitBtn.textContent = "Creando...";
+        const response = await apiRequest.addCard(name, link);
+        const newCard = {
+            _id: response._id,
+            name: response.name,
+            link: response.link,
+            isLiked: response.isLiked
+        };
+        cardList.addItem(createCard(newCard));
+        addCardPopup.close();
     }
-    const response = await apiRequest.addCard(name, link);
-    const newCard = {
-        _id: response._id,
-        name: response.name,
-        link: response.link,
-        isLiked: response.isLiked
-    };
-    cardList.addItem(createCard(newCard));
-    addCardPopup.close();
+    catch (error) {
+        console.log(error);
+    }
+    finally {
+        addCardSubmitBtn.textContent = "Crear";
+    }
 });
 addCardPopup.setEventListeners();
 // End Cards
 // Start Profile Editing
 const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) => {
-    const userName = inputValues.name;
-    const userJob = inputValues.description;
-    if (!userName || !userJob) {
-        return;
+    try {
+        const userName = inputValues.name;
+        const userJob = inputValues.description;
+        if (!userName || !userJob) {
+            return;
+        }
+        editProfileSubmitBtn.textContent = "Guardando...";
+        const response = await apiRequest.updateUserInfo(userName, userJob);
+        userInfo.setUserInfo({
+            name: response.name,
+            job: response.about,
+            avatar: response.avatar
+        });
+        editProfilePopup.close();
     }
-    const response = await apiRequest.updateUserInfo(userName, userJob);
-    userInfo.setUserInfo({
-        name: response.name,
-        job: response.about,
-        avatar: response.avatar
-    });
-    editProfilePopup.close();
+    catch (error) {
+        console.log(error);
+    }
+    finally {
+        editProfileSubmitBtn.textContent = "Guardar";
+    }
 });
 editProfilePopup.setEventListeners();
 const editAvatarPopup = new PopupWithForm("#edit-avatar", async (inputValues) => {
-    const userAvatar = inputValues.avatar;
-    if (!userAvatar) {
-        return;
+    try {
+        const userAvatar = inputValues.avatar;
+        if (!userAvatar) {
+            return;
+        }
+        editAvatarSubmitBtn.textContent = "Guardando...";
+        const response = await apiRequest.updateAvatar(userAvatar);
+        userInfo.setUserInfo({
+            name: response.name,
+            job: response.about,
+            avatar: response.avatar
+        });
+        editAvatarPopup.close();
     }
-    const response = await apiRequest.updateAvatar(userAvatar);
-    userInfo.setUserInfo({
-        name: response.name,
-        job: response.about,
-        avatar: response.avatar
-    });
-    editAvatarPopup.close();
+    catch (error) {
+        console.log(error);
+    }
+    finally {
+        editAvatarSubmitBtn.textContent = "Guardar";
+    }
 });
 editAvatarPopup.setEventListeners();
 // End Profile Editing

@@ -1,9 +1,9 @@
 export class Api {
     _URL;
     _TOKEN;
-    constructor() {
-        this._URL = "https://around-api.es.tripleten-services.com";
-        this._TOKEN = "65f7b6bc-80d5-4e30-8b61-55dcc05ca3fc";
+    constructor(configObj) {
+        this._URL = configObj.baseUrl;
+        this._TOKEN = configObj.headers.authorization;
     }
     async getUserInfo() {
         const response = await fetch(`${this._URL}/v1/users/me`, {
@@ -18,28 +18,21 @@ export class Api {
         return await response.json();
     }
     async updateUserInfo(name, job) {
-        try {
-            const response = await fetch(`${this._URL}/v1/users/me`, {
-                method: "PATCH",
-                headers: {
-                    authorization: this._TOKEN,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    about: job
-                })
-            });
-            if (response.ok) {
-                return await response.json();
-            }
-            else {
-                throw new Error(`Error: ${response.status}`);
-            }
+        const response = await fetch(`${this._URL}/v1/users/me`, {
+            method: "PATCH",
+            headers: {
+                authorization: this._TOKEN,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                about: job
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
         }
-        catch (error) {
-            console.log(error);
-        }
+        return await response.json();
     }
     async updateAvatar(avatar) {
         const response = await fetch(`${this._URL}/v1/users/me/avatar`, {

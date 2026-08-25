@@ -14,10 +14,16 @@ const addCardBtn = document.querySelector(".profile__add-button") as HTMLButtonE
 const editProfileBtn = document.querySelector(".profile__edit-button") as HTMLButtonElement;
 const editAvatarBtn = document.querySelector(".image_container") as HTMLElement;
 
+
 // Forms
 const addCardForm = document.querySelector("#new-card-form") as HTMLFormElement;
 const editProfileForm = document.querySelector("#edit-profile-form") as HTMLFormElement;
 const editAvatarForm = document.querySelector("#edit-avatar-form") as HTMLFormElement;
+
+// Submit Buttons
+const addCardSubmitBtn = addCardForm.querySelector(".popup__button") as HTMLButtonElement;
+const editProfileSubmitBtn = editProfileForm.querySelector(".popup__button") as HTMLButtonElement;
+const editAvatarSubmitBtn = editAvatarForm.querySelector(".popup__button") as HTMLButtonElement;
 
 // Inputs
 const editProfileNameInput = editProfileForm.querySelector(
@@ -31,7 +37,15 @@ const editProfileDescriptionInput = editProfileForm.querySelector(
 const editAvatarInput = editAvatarForm.querySelector(".popup__input_type_avatar") as HTMLInputElement;
 
 // Start Api instance creation
-const apiRequest = new Api();
+const apiRequest = new Api(
+  {
+    baseUrl: "https://around-api.es.tripleten-services.com",
+    headers: {
+      authorization: "65f7b6bc-80d5-4e30-8b61-55dcc05ca3fc",
+      "Content-Type": "application/json"
+    }
+  }
+);
 // End Api instance creation
 
 // Start Form Validaton.
@@ -82,14 +96,22 @@ function createCard(cardData: CardData): HTMLElement {
       imagePopup.open(name, link);
     },
     async (id) => {
-      await apiRequest.deleteCard(id); 
+      try {
+        await apiRequest.deleteCard(id); 
+      } catch (error) {
+        console.error(error);
+      }
     },
     async (id, isLiked) => {
-      if (isLiked) {
-        return await apiRequest.removeLike(id);
+      try {
+        if (isLiked) {
+          return await apiRequest.removeLike(id);
+        }
+  
+        return await apiRequest.addLike(id);  
+      } catch (error) {
+        console.error(error);
       }
-
-      return await apiRequest.addLike(id);
     }
   );
 
@@ -112,76 +134,103 @@ const cardList = new Section<CardData>(
     cardList.setItems(cards);
     cardList.renderItems()
   } catch (error: unknown) {
-    console.log(error);
+    console.error(error);
   }
 })();
 
 const addCardPopup = new PopupWithForm("#new-card-popup", async (inputValues) => {
-  const name = inputValues["place-name"];
-  const link = inputValues.link;
+  try {
+    const name = inputValues["place-name"];
+    const link = inputValues.link;
+  
+    if (!name || !link) {
+      return 
+    }
+  
+    addCardSubmitBtn.textContent = "Creando...";
+  
+    const response = await apiRequest.addCard(
+      name,
+      link
+    );
+  
+    const newCard = {
+      _id: response._id,
+      name: response.name,
+      link: response.link,
+      isLiked: response.isLiked
+    }
+  
+    cardList.addItem(createCard(newCard));
+    addCardPopup.close();
 
-  if (!name || !link) {
-    return 
+  } catch (error) {
+    console.error(error);
+  } finally {
+    addCardSubmitBtn.textContent = "Crear";
   }
-
-  const response = await apiRequest.addCard(
-    name,
-    link
-  );
-
-  const newCard = {
-    _id: response._id,
-    name: response.name,
-    link: response.link,
-    isLiked: response.isLiked
-  }
-
-  cardList.addItem(createCard(newCard));
-  addCardPopup.close();
 });
 addCardPopup.setEventListeners();
 // End Cards
 
 // Start Profile Editing
 const editProfilePopup = new PopupWithForm("#edit-popup", async (inputValues) => {
-  const userName = inputValues.name;
-  const userJob = inputValues.description;
-
-  if (!userName || !userJob) {
-    return;
-  }
-
-  const response = await apiRequest.updateUserInfo(
-    userName,
-    userJob
-  );
+  try {
+    const userName = inputValues.name;
+    const userJob = inputValues.description;
   
-  userInfo.setUserInfo({
-    name: response.name,
-    job: response.about,
-    avatar: response.avatar
-  });
+    if (!userName || !userJob) {
+      return;
+    }
 
-  editProfilePopup.close();
+    editProfileSubmitBtn.textContent = "Guardando...";
+  
+    const response = await apiRequest.updateUserInfo(
+      userName,
+      userJob
+    );
+    
+    userInfo.setUserInfo({
+      name: response.name,
+      job: response.about,
+      avatar: response.avatar
+    });
+  
+    editProfilePopup.close();
+    
+  } catch (error) {
+    console.error(error);  
+  } finally {
+    editProfileSubmitBtn.textContent = "Guardar";
+  }
 });
 editProfilePopup.setEventListeners();
 
 const editAvatarPopup = new PopupWithForm("#edit-avatar", async (inputValues) => {
-  const userAvatar = inputValues.avatar;
-
-  if (!userAvatar) {
-    return 
-  }
-
-  const response = await apiRequest.updateAvatar(userAvatar);
-
-  userInfo.setUserInfo({
-    name: response.name,
-    job: response.about,
-    avatar: response.avatar
-  });
+  try {
+    const userAvatar = inputValues.avatar;
   
-  editAvatarPopup.close();
+    if (!userAvatar) {
+      return 
+    }
+
+    editAvatarSubmitBtn.textContent = "Guardando...";
+  
+    const response = await apiRequest.updateAvatar(userAvatar);
+  
+    userInfo.setUserInfo({
+      name: response.name,
+      job: response.about,
+      avatar: response.avatar
+    });
+    
+    editAvatarPopup.close();
+    
+  } catch (error) {
+    console.error(error);
+  } finally {
+    editAvatarSubmitBtn.textContent = "Guardar";
+  }
 });
 editAvatarPopup.setEventListeners();
 // End Profile Editing

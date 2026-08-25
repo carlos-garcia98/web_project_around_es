@@ -1,10 +1,18 @@
+interface ApiConfig {
+  baseUrl: string;
+  headers: {
+    authorization: string;
+    "Content-Type": string;
+  }
+}
+
 export class Api {
   private _URL: string;
   private _TOKEN: string;
 
-  constructor() {
-    this._URL = "https://around-api.es.tripleten-services.com";
-    this._TOKEN = "65f7b6bc-80d5-4e30-8b61-55dcc05ca3fc";
+  constructor(configObj: ApiConfig) {
+    this._URL = configObj.baseUrl;
+    this._TOKEN = configObj.headers.authorization;
   }
 
   async getUserInfo() {
@@ -26,7 +34,6 @@ export class Api {
   }
 
   async updateUserInfo(name: string, job: string) {
-    try {
       const response: Response = await fetch(
         `${this._URL}/v1/users/me`,
         {
@@ -42,15 +49,11 @@ export class Api {
         }
       );
 
-      if (response.ok) {
-        return await response.json();
-      } else {
+      if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
 
-    } catch (error: unknown) {
-      console.log(error);
-    }
+      return await response.json();
   }
 
   async updateAvatar(avatar: string) {
