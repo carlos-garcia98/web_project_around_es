@@ -1,33 +1,39 @@
 interface UserInfoSelectors {
   nameSelector: string;
-  jobSelector: string;
+  aboutSelector: string;
+  avatarSelector: string;
 }
 
-interface UserData {
+interface UserInfoData {
   name: string;
-  job: string;
+  about: string;
+  avatar: string;
 }
 
 export class UserInfo {
   private _userNameElement: HTMLElement;
-  private _userJobElement: HTMLElement;
+  private _userAboutElement: HTMLElement;
+  private _userAvatarElement: HTMLImageElement;
 
-  constructor({ nameSelector, jobSelector}: UserInfoSelectors) {
+  constructor({ nameSelector, aboutSelector, avatarSelector }: UserInfoSelectors) {
     this._userNameElement = document.querySelector(nameSelector) as HTMLElement;
-    this._userJobElement = document.querySelector(jobSelector) as HTMLElement;
+    this._userAboutElement = document.querySelector(aboutSelector) as HTMLElement;
+    this._userAvatarElement = document.querySelector(avatarSelector) as HTMLImageElement;
   }
 
-  getUserInfo(): UserData {
-    const userData: UserData = {
+  getUserInfo(): UserInfoData {
+    const userData: UserInfoData = {
       name: this._userNameElement.textContent ?? "",
-      job: this._userJobElement.textContent ?? ""
+      about: this._userAboutElement.textContent ?? "",
+      avatar: this._userAvatarElement.src ?? ""
     }
 
     return userData;
   }
 
-  setUserInfo({ name, job }: UserData) {
+  setUserInfo({ name, about, avatar }: UserInfoData) {
     this._userNameElement.textContent = name;
-    this._userJobElement.textContent = job;
+    this._userAboutElement.textContent = about;
+    this._userAvatarElement.src = avatar;
   }
 }
