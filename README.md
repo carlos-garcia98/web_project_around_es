@@ -33,6 +33,15 @@ I added the logic so that the user can open a larger version of each card by cli
 
 In the fourth part, I added the logic for validating forms used in profile editing and adding a new card. I also refactored the code to make it modular, creating new .js files, exporting the functions, and importing them into the main .js file (index.js).
 
+### Part 5:
+
+In Part 5, I refactored the code to make use of the security features provided by TypeScript, creating classes for each part of the application and using loose coupling, thereby ensuring the code’s maintainability.
+
+### Part 6:
+
+In Part 6, I implemented an API (provided by Tripleten) to work with and practise asynchronous code and data requests, whilst maintaining independence between classes (loose coupling) and ensuring that user data is preserved within the application. The user experience was also improved by displaying a different status when requesting or updating data from the server and by adding real interactivity with the cards created.
+
 ## Technologies
 
 - JavaScript
+- TypeScript
